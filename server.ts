@@ -17,13 +17,13 @@ const prisma = new PrismaClient();
 // Your routes go underneath here
 
 app.get("/recipes", async (req, res) => {
-  const allRecepies = await prisma.recipe.findMany({
+  const allRecipes = await prisma.recipe.findMany({
     select: {
       id: true,
       name: true,
     },
   });
-  res.send(allRecepies);
+  res.send(allRecipes);
 });
 
 // id           Int        @id @default(autoincrement())
@@ -36,9 +36,9 @@ app.get("/recipes", async (req, res) => {
 // serves       Int
 // Comment      Comment[]
 
-app.get("/recepies/:id", async (req, res) => {
+app.get("/recipes/:id", async (req, res) => {
   const idAsNumber = parseInt(req.params.id);
-  const oneRecepie = await prisma.recipe.findUnique({
+  const oneRecipe = await prisma.recipe.findUnique({
     where: {
       id: idAsNumber,
     },
@@ -53,11 +53,11 @@ app.get("/recepies/:id", async (req, res) => {
       Comment: true,
     },
   });
-  if (!oneRecepie) {
+  if (!oneRecipe) {
     res.status(404).send({ message: "Recepie with that id not found" });
     return;
   }
-  res.send(oneRecepie);
+  res.send(oneRecipe);
 });
 
 app.listen(port, () => {

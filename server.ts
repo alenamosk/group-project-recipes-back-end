@@ -1,6 +1,6 @@
-import express from 'express';
-import { PrismaClient } from '@prisma/client';
-import { json } from 'express';
+import express from "express";
+import { PrismaClient } from "@prisma/client";
+import { json } from "express";
 
 // This is a change
 // Create an express app
@@ -16,8 +16,14 @@ const prisma = new PrismaClient();
 
 // Your routes go underneath here
 
-app.get('/recepies', (req, res) => {
-  res.send('Hello, world! I am checking the github');
+app.get("/recepies", async (req, res) => {
+  const allRecepies = await prisma.recipe.findMany({
+    select: {
+      id: true,
+      name: true,
+    },
+  });
+  res.send(allRecepies);
 });
 
 app.listen(port, () => {

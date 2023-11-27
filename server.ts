@@ -26,6 +26,40 @@ app.get("/recepies", async (req, res) => {
   res.send(allRecepies);
 });
 
+// id           Int        @id @default(autoincrement())
+// name         String
+// category     Category[]
+// img_url      String
+// instructions String
+// ingredients  String
+// prep_time    Int
+// serves       Int
+// Comment      Comment[]
+
+app.get("/recepies/:id", async (req, res) => {
+  const idAsNumber = parseInt(req.params.id);
+  const oneRecepie = await prisma.recipe.findUnique({
+    where: {
+      id: idAsNumber,
+    },
+    select: {
+      id: true,
+      name: true,
+      img_url: true,
+      instructions: true,
+      ingredients: true,
+      prep_time: true,
+      serves: true,
+      Comment: true,
+    },
+  });
+  if (!oneRecepie) {
+    res.status(404).send({ message: "Recepie with that id not found" });
+    return;
+  }
+  res.send(oneRecepie);
+});
+
 app.listen(port, () => {
   console.log(`⚡ Server listening on port: ${port}`);
 });

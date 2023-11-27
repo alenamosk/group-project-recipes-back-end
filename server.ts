@@ -16,7 +16,7 @@ const prisma = new PrismaClient();
 
 // Your routes go underneath here
 
-app.get("/recepies", async (req, res) => {
+app.get("/recipes", async (req, res) => {
   const allRecepies = await prisma.recipe.findMany({
     select: {
       id: true,

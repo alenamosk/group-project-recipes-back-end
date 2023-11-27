@@ -17,7 +17,7 @@ const prisma = new PrismaClient();
 // Your routes go underneath here
 
 app.get('/recepies', (req, res) => {
-  res.send('Hello, world!');
+  res.send('Hello, world! I am checking the github');
 });
 
 app.listen(port, () => {

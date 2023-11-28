@@ -11,6 +11,8 @@ const app = express();
 app.use(json());
 app.use(cors());
 
+app.use(cors());
+
 const port = 3002;
 
 // Create a prisma client

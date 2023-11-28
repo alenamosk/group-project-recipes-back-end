@@ -1,6 +1,7 @@
-import express from "express";
-import { PrismaClient } from "@prisma/client";
-import { json } from "express";
+import express from 'express';
+import { PrismaClient } from '@prisma/client';
+import { json } from 'express';
+import cors from 'cors';
 
 // This is a change
 // Create an express app
@@ -8,6 +9,7 @@ const app = express();
 //commit
 // Tell the app to allow json in the request body
 app.use(json());
+app.use(cors());
 
 const port = 3002;
 
@@ -16,7 +18,7 @@ const prisma = new PrismaClient();
 
 // Your routes go underneath here
 
-app.get("/recipes", async (req, res) => {
+app.get('/recipes', async (req, res) => {
   const allRecipes = await prisma.recipe.findMany({
     select: {
       id: true,
@@ -36,7 +38,7 @@ app.get("/recipes", async (req, res) => {
 // serves       Int
 // Comment      Comment[]
 
-app.get("/recipes/:id", async (req, res) => {
+app.get('/recipes/:id', async (req, res) => {
   const idAsNumber = parseInt(req.params.id);
   const oneRecipe = await prisma.recipe.findUnique({
     where: {
@@ -54,7 +56,7 @@ app.get("/recipes/:id", async (req, res) => {
     },
   });
   if (!oneRecipe) {
-    res.status(404).send({ message: "Recepie with that id not found" });
+    res.status(404).send({ message: 'Recepie with that id not found' });
     return;
   }
   res.send(oneRecipe);

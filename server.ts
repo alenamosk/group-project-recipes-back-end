@@ -1,6 +1,7 @@
 import express from "express";
 import { PrismaClient } from "@prisma/client";
 import { json } from "express";
+import cors from "cors";
 
 // This is a change
 // Create an express app
@@ -8,6 +9,8 @@ const app = express();
 //commit
 // Tell the app to allow json in the request body
 app.use(json());
+
+app.use(cors());
 
 const port = 3002;
 

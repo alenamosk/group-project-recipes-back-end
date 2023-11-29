@@ -64,6 +64,26 @@ app.get('/recipes/:id', async (req, res) => {
   res.send(oneRecipe);
 });
 
+app.post('/comment', async (req, res) => {
+  const requestBody = req.body;
+  console.log(requestBody);
+  const addComment = await prisma.comment.create({
+    data: requestBody,
+  });
+  res.send(addComment);
+});
+
+app.get('/comment', async (req, res) => {
+  const allComments = await prisma.comment.findMany({
+    select: {
+      name: true,
+      created_at: true,
+      message: true,
+      rating: true,
+    },
+  });
+  res.send(allComments);
+});
 app.listen(port, () => {
   console.log(`⚡ Server listening on port: ${port}`);
 });

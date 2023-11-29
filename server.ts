@@ -73,8 +73,12 @@ app.post('/comment', async (req, res) => {
   res.send(addComment);
 });
 
-app.get('/comment', async (req, res) => {
+app.get('/comment/:id', async (req, res) => {
+  const idAsNumber = parseInt(req.params.id);
   const allComments = await prisma.comment.findMany({
+    where: {
+      recipeId: idAsNumber,
+    },
     select: {
       name: true,
       created_at: true,
@@ -82,6 +86,10 @@ app.get('/comment', async (req, res) => {
       rating: true,
     },
   });
+  if (!allComments) {
+    res.status(404).send({ message: 'Comment with that id not found' });
+    return;
+  }
   res.send(allComments);
 });
 app.listen(port, () => {

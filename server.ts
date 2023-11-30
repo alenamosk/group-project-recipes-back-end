@@ -58,20 +58,46 @@ app.get('/recipes/:id', async (req, res) => {
     },
   });
   if (!oneRecipe) {
-    res.status(404).send({ message: 'Recepie with that id not found' });
+    res.status(404).send({ message: 'Recipe with that id not found' });
     return;
   }
   res.send(oneRecipe);
 });
 
-app.post('/comment', async (req, res) => {
+// app.post('/comment', async (req, res) => {
+//   const requestBody = req.body;
+//   console.log(requestBody);
+//   const addComment = await prisma.comment.create({
+//     data: requestBody,
+//   });
+//   res.send(addComment);
+// });
+
+app.post('/comments', async (req, res) => {
   const requestBody = req.body;
-  console.log(requestBody);
-  const addComment = await prisma.comment.create({
-    data: requestBody,
-  });
-  res.send(addComment);
+  try {
+    const addComment = await prisma.comment.create({
+      data: requestBody,
+    });
+
+    res.send(addComment);
+  } catch (error) {
+    console.error('Error adding comment:', error);
+    res.status(500).send({ error: 'Error adding comment' });
+  }
 });
+
+// Resource: trees
+// CRUD
+// READ:
+// GET /[resources] -> /trees
+// GET /[resources]/:id -> /trees/:id
+// CREATE:
+// POST /[resources] -> /trees
+// UPDATE:
+// PATCH /[resources]/:id -> /trees/:id
+// DELETE:
+// DELETE /[resources]/:id -> /trees/:id
 
 app.get('/comment/:id', async (req, res) => {
   const idAsNumber = parseInt(req.params.id);

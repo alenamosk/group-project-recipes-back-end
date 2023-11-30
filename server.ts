@@ -118,6 +118,36 @@ app.get('/comment/:id', async (req, res) => {
   }
   res.send(allComments);
 });
+
+// add a new recipe
+app.post("/recipes", async (req, res) => {
+  const requestBody = req.body;
+
+  if (
+    "recipeName" in requestBody &&
+    "instructions" in requestBody &&
+    "ingredients" in requestBody &&
+    "prepTime" in requestBody &&
+    "serves" in requestBody &&
+    "imgUrl" in requestBody &&
+    "category" in requestBody
+  ) {
+    try {
+      await prisma.recipe.create({
+        data: requestBody,
+      });
+      res.status(201).send({ message: "Recipe created!" });
+    } catch (error) {
+      res.status(500).send({ message: "Something went wrong!" });
+    }
+  } else {
+    res.status(400).send({
+      message:
+        "'recipe name', 'instructions', 'ingredients', 'prepTime', 'serves', 'imgUrl', 'category' are required!",
+    });
+  }
+});
+
 app.listen(port, () => {
   console.log(`⚡ Server listening on port: ${port}`);
 });

@@ -1,6 +1,7 @@
 import recipe from "./data/recipes.json";
 import comment from "./data/comments.json";
 import categorie from "./data/categories.json";
+import user from "./data/users.json";
 
 import { PrismaClient } from "@prisma/client";
 
@@ -13,13 +14,6 @@ const seedCategories = async () => {
   await Promise.all(categoryPromises);
 };
 
-const seedRecipes = async () => {
-  const recipePromises = recipe.map((recipeData) =>
-    prisma.recipe.create({ data: recipeData })
-  );
-  await Promise.all(recipePromises);
-};
-
 const seedComments = async () => {
   const commentPromises = comment.map((commentData) =>
     prisma.comment.create({ data: commentData })
@@ -27,14 +21,26 @@ const seedComments = async () => {
   await Promise.all(commentPromises);
 };
 
+const seedUser = async () => {
+  const userPromises = user.map((userData) =>
+    prisma.user.create({ data: userData })
+  );
+  await Promise.all(userPromises);
+};
+
+const seedRecipes = async () => {
+  const recipePromises = recipe.map((recipeData) =>
+    prisma.recipe.create({ data: recipeData })
+  );
+  await Promise.all(recipePromises);
+};
+
 const seed = async () => {
   try {
-    // Seed categories first because other tables depend on them
     await seedCategories();
-    // After categories, seed recipes.
-    await seedRecipes();
-    // Lastly, seed comments which may depend on recipes (and hence categories).
     await seedComments();
+    await seedUser();
+    await seedRecipes();
   } catch (e) {
     console.error("Error during seeding: ", e);
     throw e; // Re-throw the error to handle it in the final block if needed.
@@ -44,6 +50,14 @@ const seed = async () => {
 };
 
 seed();
+
+// const seed = async () => {
+//   await seedCategoriesAndUsers();
+//   await seedRecipes();
+//   await seedComments();
+// };
+
+// seed();
 
 // const seed = async () => {
 //   for (let i = 0; i < categorie.length; i += 1) {

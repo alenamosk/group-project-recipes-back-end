@@ -2,23 +2,21 @@ import express from 'express';
 import { PrismaClient } from '@prisma/client';
 import { json } from 'express';
 import cors from 'cors';
+import jwt from 'jsonwebtoken';
+import { JwtPayload } from 'jsonwebtoken';
+import { toData, toToken } from './auth/jwt';
 
-// This is a change
-// Create an express app
 const app = express();
-//commit
-// Tell the app to allow json in the request body
+
 app.use(json());
 app.use(cors());
 
 app.use(cors());
+app.use(express());
 
 const port = 3002;
 
-// Create a prisma client
 const prisma = new PrismaClient();
-
-// Your routes go underneath here
 
 app.get('/recipes', async (req, res) => {
   const allRecipes = await prisma.recipe.findMany({
@@ -83,15 +81,6 @@ app.get('/recipes/:id', async (req, res) => {
   res.send(oneRecipe);
 });
 
-// app.post('/comment', async (req, res) => {
-//   const requestBody = req.body;
-//   console.log(requestBody);
-//   const addComment = await prisma.comment.create({
-//     data: requestBody,
-//   });
-//   res.send(addComment);
-// });
-
 app.post('/comments', async (req, res) => {
   const requestBody = req.body;
   try {
@@ -137,36 +126,94 @@ app.get('/comment/:id', async (req, res) => {
   }
   res.send(allComments);
 });
-
-// add a new recipe
-app.post("/recipes", async (req, res) => {
+app.post('/register', async (req, res) => {
   const requestBody = req.body;
-
-  if (
-    "recipeName" in requestBody &&
-    "instructions" in requestBody &&
-    "ingredients" in requestBody &&
-    "prepTime" in requestBody &&
-    "serves" in requestBody &&
-    "imgUrl" in requestBody &&
-    "category" in requestBody
-  ) {
+  if ('username' in requestBody && 'password' in requestBody) {
     try {
-      await prisma.recipe.create({
+      await prisma.user.create({
         data: requestBody,
       });
-      res.status(201).send({ message: "Recipe created!" });
+      res.status(201).send({ message: 'User created!' });
     } catch (error) {
-      res.status(500).send({ message: "Something went wrong!" });
+      // If we get an error, send back HTTP 500 (Server Error)
+      res.status(500).send({ message: 'Something went wrong!' });
     }
   } else {
-    res.status(400).send({
-      message:
-        "'recipe name', 'instructions', 'ingredients', 'prepTime', 'serves', 'imgUrl', 'category' are required!",
-    });
+    // If we are missing fields, send back a HTTP 400
+    res
+      .status(400)
+      .send({ message: "'username', 'password' and 'age' are required!" });
   }
 });
 
+app.post('/login', async (req, res) => {
+  interface User {
+    id: number;
+    username: string;
+    password: string;
+  }
+
+  const requestBody = req.body;
+  if ('username' in requestBody && 'password' in requestBody) {
+    try {
+      // First find the user
+      const userToLogin = await prisma.user.findFirst({
+        where: {
+          username: requestBody.username,
+        },
+      });
+      if (userToLogin && userToLogin.password === requestBody.password) {
+        const token = toToken({ userId: userToLogin.id });
+        res.status(200).send({ token: token });
+        return;
+      }
+      // If we didn't find the user or the password doesn't match, send back an error message
+      res.status(400).send({ message: 'Login failed' });
+    } catch (error) {
+      // If we get an error, send back HTTP 500 (Server Error)
+      res.status(500).send({ message: 'Something went wrong!' });
+    }
+  } else {
+    // If we are missing fields, send back a HTTP 400
+    res
+      .status(400)
+      .send({ message: "'username' and 'password' are required!" });
+  }
+});
+
+app.get('/users', async (req, res) => {
+  // Get the headers
+  const headers = req.headers;
+
+  //Check if the authorization key is in the headers and if the token is provided correctly
+  if (
+    headers['authorization'] && // Is the header there
+    headers['authorization'].split(' ')[0] === 'Bearer' && // Is the first word (before the space) equal to "Bearer"
+    headers['authorization'].split(' ')[1] // Is there a part after the space
+  ) {
+    // get the token
+    const token = headers['authorization'].split(' ')[1];
+    try {
+      // Verify the token, this will throw an error if it isn't
+      const data = toData(token);
+      // If we reach this point the token was correct!
+    } catch (e) {
+      res.status(401).send({ message: 'Token missing or invalid' });
+      return;
+    }
+  } else {
+    res.status(401).send({ message: 'Token missing or invalid' });
+    return;
+  }
+
+  const allUsers = await prisma.user.findMany({
+    select: {
+      id: true,
+      username: true,
+    },
+  });
+  res.send(allUsers);
+});
 app.listen(port, () => {
   console.log(`⚡ Server listening on port: ${port}`);
 });

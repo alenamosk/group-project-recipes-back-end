@@ -32,15 +32,44 @@ const seedRecipes = async () => {
   const recipePromises = recipe.map((recipeData) =>
     prisma.recipe.create({ data: recipeData })
   );
+
   await Promise.all(recipePromises);
 };
 
 const seed = async () => {
+  // await prisma.category.create({
+  //   data: {
+  //     id: 1,
+  //     name: "breakfast",
+  //     img_url: "🍳",
+  //   },
+  // });
+  // await prisma.user.create({
+  //   data: {
+  //     id: 1,
+  //     username: "Shruti",
+  //     password: "Jain",
+  //   },
+  // });
+  // await prisma.recipe.create({
+  //   data: {
+  //     id: 1,
+  //     name: "Breakfast Burritos",
+  //     categories: { create: { category: { connect: { id: 1 } } } },
+  //     img_url: "https://i.imgur.com/ZMd0q7c.png",
+  //     instructions:
+  //       "Cook your preferred meat and vegetables. Scramble eggs and mix with the cooked meat and vegetables. Warm up tortillas and fill them with the mixture. Fold and serve warm.",
+  //     ingredients: "Tortillas, eggs, meat, vegetables",
+  //     prep_time: 30,
+  //     serves: 4,
+  //     userId: 1,
+  //   },
+  // });
   try {
     await seedCategories();
-    await seedComments();
     await seedUser();
     await seedRecipes();
+    await seedComments();
   } catch (e) {
     console.error("Error during seeding: ", e);
     throw e; // Re-throw the error to handle it in the final block if needed.
@@ -50,36 +79,3 @@ const seed = async () => {
 };
 
 seed();
-
-// const seed = async () => {
-//   await seedCategoriesAndUsers();
-//   await seedRecipes();
-//   await seedComments();
-// };
-
-// seed();
-
-// const seed = async () => {
-//   for (let i = 0; i < categorie.length; i += 1) {
-//     const categorieData = categorie[i];
-//     if (categorieData) {
-//       await prisma.category.create({ data: categorieData });
-//     }
-//   }
-
-//   for (let i = 0; i < recipe.length; i += 1) {
-//     const recipeData = recipe[i];
-//     if (recipeData) {
-//       await prisma.recipe.create({ data: recipeData });
-//     }
-//   }
-
-//   for (let i = 0; i < comment.length; i += 1) {
-//     const commentData = comment[i];
-//     if (commentData) {
-//       await prisma.comment.create({ data: commentData });
-//     }
-//   }
-// };
-
-// seed();

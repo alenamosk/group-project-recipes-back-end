@@ -24,7 +24,7 @@ app.get("/recipes", async (req, res) => {
       id: true,
       name: true,
       img_url: true,
-      category: {
+      categories: {
         select: {
           id: true,
           name: true,

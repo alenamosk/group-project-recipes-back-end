@@ -24,9 +24,28 @@ app.get("/recipes", async (req, res) => {
     select: {
       id: true,
       name: true,
+      img_url: true,
+      category: {
+        select: {
+          id: true,
+          name: true,
+          img_url: true,
+        },
+      },
     },
   });
   res.send(allRecipes);
+});
+
+app.get("/categories", async (req, res) => {
+  const allCategories = await prisma.category.findMany({
+    select: {
+      id: true,
+      name: true,
+      img_url: true,
+    },
+  });
+  res.send(allCategories);
 });
 
 // id           Int        @id @default(autoincrement())
